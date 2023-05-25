@@ -12,6 +12,27 @@ int power(int n, int k) {
 	for(int i = 1; i < 5; i++)
 	for   (int i = 1; i < 5; i++)
 
+	if  (k)
+	if(k)
+	if (k)
+
+	while()
+	while() {
+	while ()
+	while () {
+	while    ()
+	while    () {
+	do{
+	do {
+	do   {
+	x== 0
+	x!= 0
+	x==0
+	x!=0
+	p==NULL
+	p!=NULL
+	p== NULL
+	p!= NULL
 	int x ; x= 5;
 	if (...) {
 		return 123;

@@ -1,3 +1,5 @@
+/* TRIFAN BOGDAN-CRISTIAN , 312CD */
+/* PROIECT PCLP 3 */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -40,7 +42,15 @@ void file_opener(char const *name_of_file)
         space_bracket(name_of_file, txt, nr_lines, i, &mistakes);
         punct_si_virgula(name_of_file, txt, nr_lines, i, &mistakes);
         verify_for(name_of_file, txt, nr_lines, i, &mistakes);
-        // verify_if(name_of_file, txt, nr_lines, i, &mistakes);
+        verify_if(name_of_file, txt, nr_lines, i, &mistakes);
+        verify_while_simplu(name_of_file, txt, nr_lines, i, &mistakes);
+        verify_do_from_do_while(name_of_file, txt, nr_lines, i, &mistakes);
+        //verify_if(name_of_file, txt, nr_lines, i, &mistakes);
+        non_equal_zero(name_of_file, txt, nr_lines, i, &mistakes);
+        equal_zero(name_of_file, txt, nr_lines, i, &mistakes);
+        non_equal_null(name_of_file, txt, nr_lines, i, &mistakes);
+        equal_null(name_of_file, txt, nr_lines, i, &mistakes);
+
         i++;
     }
 

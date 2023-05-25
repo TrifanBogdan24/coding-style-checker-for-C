@@ -1,3 +1,6 @@
+# TRIFAN BOGDAN-CRISTIAN , 312CD
+# PROIECT PCLP 3
+
 CC = gcc
 CFLAGS = -Wall -g
 EXC = coding_style
