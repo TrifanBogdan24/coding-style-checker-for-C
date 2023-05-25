@@ -37,6 +37,10 @@ void file_opener(char const *name_of_file)
         trailing_whitespace(name_of_file, txt, nr_lines, i, &mistakes);
         long_line(name_of_file, txt, nr_lines, i, &mistakes);
         comma(name_of_file, txt, nr_lines, i, &mistakes);
+        space_bracket(name_of_file, txt, nr_lines, i, &mistakes);
+        punct_si_virgula(name_of_file, txt, nr_lines, i, &mistakes);
+        verify_for(name_of_file, txt, nr_lines, i, &mistakes);
+        // verify_if(name_of_file, txt, nr_lines, i, &mistakes);
         i++;
     }
 

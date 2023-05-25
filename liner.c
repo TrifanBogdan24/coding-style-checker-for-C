@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 #include "macrouri.h"
 #include "byte_string.h"
 #include "liner.h"
@@ -7,6 +6,7 @@
 #define NON_BLANK(c) ((c) ^ '\n') && ((c) ^ ' ')
 #define CHAR_EGAL(c1, c2) ((c1) ^ (c2) ? 0 : 1)
 #define ESTE_CIFRA(c) (('0' <= (c)) && ((c) <= '9') ? 1 : 0)
+#define ESTE_LITERA(c) ((('a' <= (c) && (c) <= 'z') || ('A' <= (c) && (c) <= 'Z')) ? 1 : 0)
 
 int blank_line(char *sir)
 {
@@ -20,8 +20,8 @@ int blank_line(char *sir)
 int multiple_blank_lines(char const *f_name, char **txt, int nr_lines, int i, int *error)
 {
     int j = i;
-    int len = byteop_strlen(txt[j]);
-    while (j < len && blank_line(txt[j]))
+    // int lungime = byteop_strlen(txt[j]);
+    while (j < nr_lines && blank_line(txt[j]))
         j++;
 
 
@@ -35,10 +35,10 @@ int multiple_blank_lines(char const *f_name, char **txt, int nr_lines, int i, in
 
 void long_line(char const *f_name, char **txt, int nr_lines, int lin, int *error)
 {
-    int len = byteop_strlen(txt[lin]);
-    if (len > OPT_ZECI) {
+    int lungime = byteop_strlen(txt[lin]);
+    if (lungime > OPT_ZECI) {
         printf("%s : ERROR : ", f_name);
-        printf("line %d has a length of %d, ", lin + UNU, len);
+        printf("line %d has a length of %d, ", lin + UNU, lungime);
         printf("bigger than %d.\n", OPT_ZECI);
         (*error)++;
     }
@@ -47,9 +47,9 @@ void long_line(char const *f_name, char **txt, int nr_lines, int lin, int *error
 void comma(char const *f_name, char **txt, int nr_lines, int lin, int *error)
 {
     int good = UNU; // nu verificam in interiorul ghilimelelor
-    int len = byteop_strlen(txt[lin]);
-    for (int i = ZERO; i < len; i++) {
-        if (txt[lin][i] == '"')
+    int lungime = byteop_strlen(txt[lin]);
+    for (int i = ZERO; i < lungime; i++) {
+        if (CHAR_EGAL(txt[lin][i], '"'))
             good = UNU - good;
 
         if (txt[lin][i] == ',' && good) {
@@ -60,7 +60,7 @@ void comma(char const *f_name, char **txt, int nr_lines, int lin, int *error)
                 (*error)++;
             } 
 
-            if (i < len - UNU && !CHAR_EGAL(txt[lin][i + UNU] ,' ')) {
+            if (i < lungime - UNU && !CHAR_EGAL(txt[lin][i + UNU] ,' ')) {
                 printf("%s : ERROR : ", f_name);
                 printf("line %d, column %i", lin + UNU, i + DOI);
                 printf(" expected a space ' ' after a comma ','.\n");
@@ -68,7 +68,7 @@ void comma(char const *f_name, char **txt, int nr_lines, int lin, int *error)
             }
 
             int j = i + UNU;
-            while (j < len && CHAR_EGAL(txt[lin][j], ' '))
+            while (j < lungime && CHAR_EGAL(txt[lin][j], ' '))
                 j++;
 
             if (j > i + DOI) {
@@ -83,13 +83,171 @@ void comma(char const *f_name, char **txt, int nr_lines, int lin, int *error)
 
 void trailing_whitespace(char const *f_name, char **txt, int nr_lines, int lin, int *error)
 {
-    int len = byteop_strlen(txt[lin]);
-    
-    if (len - UNU > ZERO && CHAR_EGAL(txt[lin][len- DOI], ' ')) {
+    int lungime = byteop_strlen(txt[lin]);
+    if (lungime - UNU > ZERO && CHAR_EGAL(txt[lin][lungime- DOI], ' ')) {
         // daca col = 0, atunci blank line, care este deja verificat
         printf("%s : ERROR : ", f_name);
         printf("line %d trailing whitespaces", lin + UNU);
         printf(" at the end of the line.\n");
         (*error)++;
     }
+}
+
+void space_bracket(char const *f_name, char **txt, int nr_lines, int lin, int *error)
+{
+    int lungime = byteop_strlen(txt[lin]);
+    int good = UNU; // nu o sa facem verificari intre ghilimele si comentarii
+
+    if (byteop_strstr(txt[lin], "{") && byteop_strstr(txt[lin], "}")) {
+        printf("%s : ERROR : ", f_name);
+        printf(" line %d : is not a good practice ", lin + UNU);
+        printf("to have two braces one the same line '{...}.'.\n");
+        (*error)++;
+    }
+
+    for (int i = ZERO; i < lungime; i++) {
+        if (txt[lin][i] == '"')
+            good = UNU - good;
+
+        if (CHAR_EGAL(txt[lin][i], '/') && i <= lungime - DOI && 
+            (CHAR_EGAL(txt[lin][i + 1], '/') || CHAR_EGAL(txt[lin][i + 1], '*')))
+            good = ZERO;
+
+        if (!good)
+            continue;
+
+        if (CHAR_EGAL(txt[lin][i], '(') && i < lungime
+            && CHAR_EGAL(txt[lin][i + UNU], ' ')) {
+            printf("%s : ERROR : ", f_name);
+            printf("line %d, column %d", lin + UNU, i + UNU);
+            printf(" unneccesary space(s) after round bracket '('.\n");
+            (*error)++;
+            continue;
+        }
+
+        if (CHAR_EGAL(txt[lin][i], '[') && i < lungime
+            && CHAR_EGAL(txt[lin][i + UNU], ' ')) {
+            printf("%s : ERROR : ", f_name);
+            printf("line %d, column %d", lin + UNU, i + UNU);
+            printf(" unneccesary space(s) after square bracket '['.\n");
+            (*error)++;
+            continue;
+        }
+
+        if (CHAR_EGAL(txt[lin][i], ')') && i > ZERO &&
+            CHAR_EGAL(txt[lin][i - UNU], ' ') && byteop_strstr(txt[lin], "{")) {
+            printf("%s : ERROR : ", f_name);
+            printf("line %d, column %d", lin + UNU, i + UNU);
+            printf(" unneccesary space(s) before round bracket ')'.\n");
+            (*error)++;
+            continue;
+        }
+
+        if (txt[lin][i] == ']' && i > ZERO && txt[lin][i - UNU] == ' ' &&
+            byteop_strstr(txt[lin], "{")) {
+            printf("%s : ERROR : ", f_name);
+            printf("line %d, column %d", lin + UNU, i + UNU);
+            printf(" unneccesary space(s) before square bracket ']'.\n");
+            (*error)++;
+            continue;
+        }
+    }
+}
+
+int for_declaration(char **txt, int nr_line, int lin)
+{
+    // daca expresia for se intinde pe mai multe randuri
+    // functia nu mia functioneaza
+    if (byteop_strstr(txt[lin], "for"))
+        return UNU;
+
+    return ZERO;
+}
+
+int is_some_cmd_in_right(char **txt, int lin, int col)
+{
+    int lungime = byteop_strlen(txt[lin]);
+    
+    while (col < lungime && CHAR_EGAL(txt[lin][col], ' ')) 
+        col++;
+    
+    if (col == lungime)
+        return UNU;
+
+    if (ESTE_LITERA(txt[lin][col]))
+        return UNU;
+    return ZERO;
+}
+
+void punct_si_virgula(char const *f_name, char **txt, int nr_lines, int lin, int *error)
+{
+    int lungime = byteop_strlen(txt[lin]);
+    for (int i = ZERO; i < lungime; i++) {
+        if (!CHAR_EGAL(txt[lin][i], ';'))
+            continue;
+
+        if (i > ZERO && CHAR_EGAL(txt[lin][i - UNU], ' ')) {
+            printf("%s : ERROR ", f_name);
+            printf("line %d, column %d : ", lin + UNU, i + UNU);
+            printf(" unneccesary space(s) before ';'.\n");
+            (*error)++;
+        }
+
+        // aici vreua sa verific daca sunt mai multe operatii desp. prin ;
+        // if (!for_declaration(txt, lin, i) ||
+        //     is_some_cmd_in_right(txt, lin, i)) {
+        //     printf("%s : ERROR ", f_name);
+        //     printf(" linia %d", lin + UNU);
+        //     printf(" bad practice to separate multiple operations by ';'.\n");
+        //     (*error)++;
+        // }
+    }
+}
+
+void verify_for(char const *f_name, char **txt, int nr_lines, int lin, int *error)
+{
+    char *p = byteop_strstr(txt[lin], "for");
+    if (!p)
+        return;
+
+    p += byteop_strlen("for");
+    if (*p && *p != ' ') {
+        printf("%s : ERROR : ", f_name);
+        printf("line %d : there should be a space ", lin);
+        printf("between 'for' and paranthesis '('.\n");
+        (*error)++;
+    }
+
+    p += UNU;
+    if (*p && *p == ' ') {
+        printf("%s : ERROR : ", f_name);
+        printf("line %d : too many spaces", lin);
+        printf("between 'for' and paranthesis '('.\n");
+        (*error)++;
+    }
+
+}
+
+void verfiy_if(char const *f_name, char **txt, int nr_lines, int lin, int *error)
+{
+    char *p = byteop_strstr(txt[lin], "if");
+    if (!p)
+        return;
+
+    p += byteop_strlen("if");
+    if (*p && *p != ' ') {
+        printf("%s : ERROR : ", f_name);
+        printf("line %d : there should be a space ", lin);
+        printf("between 'for' and paranthesis '('.\n");
+        (*error)++;
+    }
+
+    p += UNU;
+    if (*p && *p == ' ') {
+        printf("%s : ERROR : ", f_name);
+        printf("line %d : too many spaces", lin);
+        printf("between 'for' and paranthesis '('.\n");
+        (*error)++;
+    }
+
 }

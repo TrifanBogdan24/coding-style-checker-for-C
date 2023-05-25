@@ -12,7 +12,10 @@ int main(void)
 		sum +=   x; 
 		p = p *  x; 
 	} 
-    x , 6,  7, 4,5 
+
+
+
+    int x = ( 4 * 5 )*(  4*5) ;
 	if (sum > 0 && p > 0)  
 		sum = p; 
     
@@ -21,6 +24,8 @@ int main(void)
 		printf ("Sunt un cartof! (Silviu Popescu - 2016)\n" ) ;
 	}
 
+	int nr =2;
+	while (nr) {nr = nr / 2;}
 	do {
 		printf( "Sunt un cartof! (Silviu Popescu - 2016)\n") ;
 		printf( "Sunt un cartof! (Silviu Popescu - 2016)\n") ;

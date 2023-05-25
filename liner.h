@@ -11,4 +11,12 @@ void comma(char const *f_name, char **txt, int nr_lines, int lin, int *error);
 
 void trailing_whitespace(char const *f_name, char **txt, int nr_lines, int lin, int *error);
 
+void space_bracket(char const *f_name, char **txt, int nr_lines, int lin, int *error);
+
+void punct_si_virgula(char const *f_name, char **txt, int nr_lines, int lin, int *error);
+
+void verify_for(char const *f_name, char **txt, int nr_lines, int lin, int *error);
+
+void verify_if(char const *f_name, char **txt, int nr_lines, int lin, int *error);
+
 #endif
