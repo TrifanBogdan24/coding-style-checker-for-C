@@ -7,7 +7,7 @@
 
 void file_opener(char const *name_of_file)
 {
-    printf("%s ", name_of_file);
+    printf("Checking file %s\n", name_of_file);
     FILE *fin = fopen(name_of_file, "rt");
     if (!fin) {
         printf("Eroare la deschiderea fisierului");
@@ -15,6 +15,7 @@ void file_opener(char const *name_of_file)
     }
 
     char **txt = (char **)malloc(MAX_LIN * sizeof(char *));
+    int mistakes = ZERO;
     for (int i = ZERO; i < MAX_LIN; i++)
         txt[i] = (char *)malloc(MAX_COL * sizeof(char));
 
@@ -29,10 +30,28 @@ void file_opener(char const *name_of_file)
         }
     }
 
-    for (int i = ZERO; i < nr_lines; i++) {
+    int i = ZERO;
+    while (i < nr_lines) {
 
+        i = multiple_blank_lines(name_of_file, txt, nr_lines, i, &mistakes);
+        void long_line(char const *f_name, char **txt, int idx, int *error);
+        i++;
     }
-    
+
+    if (byteop_strlen(txt[nr_lines - UNU])) {
+        printf("%s : ERROR : ", name_of_file);
+        printf("expected new-line character at the end of the file.\n"); 
+        mistakes++;
+    }
+
+    if (!mistakes) {
+        printf("%s : seems ok, ", name_of_file);
+        printf("but should also be checked manually. Good luck\n");
+    } else {
+        printf("In the file %s have been identified", name_of_file);
+        printf(" %d coding style errors.\n\n", mistakes);
+    }
+
     for (int i = ZERO; i < MAX_LIN; i++)
         free(txt[i]);
     free(txt);

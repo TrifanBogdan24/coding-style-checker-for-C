@@ -8,7 +8,7 @@ int power(int n, int k) {
 	{
 		return 1;
 	}
-
+ 
 	if (...) {
 		return 123;
 	}
