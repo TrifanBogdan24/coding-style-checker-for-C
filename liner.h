@@ -3,8 +3,12 @@
 
 int blank_line(char *sir);
 
-int multiple_blank_lines(char const *f_name, char **txt, int nr_lin, int i, int *error);
+int multiple_blank_lines(char const *f_name, char **txt, int nr_lines, int i, int *error);
 
-void long_line(char const *f_name, char **txt, int idx, int *error);
+void long_line(char const *f_name, char **txt, int nr_lines, int lin, int *error);
+
+void comma(char const *f_name, char **txt, int nr_lines, int lin, int *error);
+
+void trailing_whitespace(char const *f_name, char **txt, int nr_lines, int lin, int *error);
 
 #endif

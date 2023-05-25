@@ -34,7 +34,9 @@ void file_opener(char const *name_of_file)
     while (i < nr_lines) {
 
         i = multiple_blank_lines(name_of_file, txt, nr_lines, i, &mistakes);
-        void long_line(char const *f_name, char **txt, int idx, int *error);
+        trailing_whitespace(name_of_file, txt, nr_lines, i, &mistakes);
+        long_line(name_of_file, txt, nr_lines, i, &mistakes);
+        comma(name_of_file, txt, nr_lines, i, &mistakes);
         i++;
     }
 

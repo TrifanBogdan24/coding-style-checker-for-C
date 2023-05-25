@@ -6,6 +6,7 @@
 
 #define ZERO 0
 #define UNU 1
+#define DOI 2
 #define OPT_ZECI 80
 #define MAX_COL 1000
 #define MAX_LIN 100000
